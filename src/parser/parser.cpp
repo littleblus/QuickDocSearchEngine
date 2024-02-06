@@ -90,8 +90,8 @@ void parserHtml(const std::vector<std::string>& file_list, std::vector<doc_info>
 		std::cout << "content: " << doc.content << '\n';
 #endif
 
-		// 将解析结果存入doc_list中
-		doc_list.push_back(doc);
+		// 将解析结果存入doc_list中，因为这个doc不在需要了，所以使用std::move
+		doc_list.push_back(std::move(doc));
 		fs.close();
 	}
 }

@@ -7,6 +7,7 @@
 #include <iostream>
 
 #define SEP '\3'
+//#define DEBUG
 
 namespace ns_index {
 	struct doc_info {
@@ -18,9 +19,12 @@ namespace ns_index {
 
 	struct inverted_elem {
 		uint64_t doc_id;
+		std::string word;
 		int weight;
 
-		inverted_elem(uint64_t doc_id, int weight) : doc_id(doc_id), weight(weight) {}
+		inverted_elem(uint64_t doc_id, const std::string& word, int weight)
+			: doc_id(doc_id), word(word), weight(weight) {
+		}
 	};
 
 	struct count {
@@ -44,7 +48,13 @@ namespace ns_index {
 			}
 			std::string line;
 			int errcnt = 0;
+#ifdef DEBUG
+			int cnt = 0;
+#endif
 			while (std::getline(file, line)) {
+#ifdef DEBUG
+				if (++cnt % 50 == 0) std::cerr << "构建索引:" << cnt << "行" << '\n';
+#endif
 				// 建立正排索引
 				doc_info doc;
 				doc.doc_id = forward_index.size();
@@ -79,7 +89,8 @@ namespace ns_index {
 					wordToCnt[s].content_cnt++;
 				}
 				for (auto& [str, cnt] : wordToCnt) {
-					inverted_index[str].emplace_back(doc.doc_id, weight(cnt));
+					// 保证str全部是小写
+					inverted_index[str].emplace_back(doc.doc_id, str, weight(cnt));
 				}
 
 				forward_index.push_back(std::move(doc));

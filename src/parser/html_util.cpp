@@ -47,8 +47,13 @@ std::string html_util::extractContent(const std::string& file) {
 				state = LABEL;
 			}
 			else {
+				// 去除换行符
 				if (c == '\n') {
 					c = ' ';
+				}
+				// 多个空格合并为一个空格
+				if (c == ' ' && !content.empty() && content.back() == ' ') {
+					continue;
 				}
 				content.push_back(c);
 			}

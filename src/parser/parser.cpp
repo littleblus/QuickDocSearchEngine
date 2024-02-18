@@ -10,8 +10,8 @@
 
 using html_util::doc_info;
 
-const std::string src_path = "../../data/input";
-const std::string raw_path = "../../raw_html/raw_html.txt";
+const std::string src_path = "data/input";
+const std::string raw_path = "raw_html/raw_html.txt";
 
 void setFlieList(const std::string& path, std::vector<std::string>& file_list);
 void parserHtml(const std::vector<std::string>& file_list, std::vector<doc_info>& doc_list);

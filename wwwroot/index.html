@@ -5,10 +5,98 @@
 <head>
 	<meta charset="utf-8">
 	<title>Boost Search Engine</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+	
+		html,
+		body {
+			height: 100%;
+		}
+	
+		.container {
+			width: 800px;
+			margin: 0px auto;
+			margin-top: 15px;
+		}
+	
+		.container .search {
+			width: 100%;
+			height: 52px;
+			text-align: center;
+		}
+	
+		.container .search input {
+			float: left;
+			width: 600px;
+			height: 50px;
+			border: 1px solid black;
+			border-right: none;
+			padding-left: 10px;
+			font-size: 15px;
+			color: #ccc;
+		}
+	
+		.container .search button {
+			float: left;
+			width: 150px;
+			height: 52px;
+			font-size: 18px;
+			font-family: 'Times New Roman', Times, serif;
+			color: white;
+			background-color: #451b6f;
+		}
+	
+		.container .result {
+			width: 100%;
+			height: 100%;
+			margin-top: 20px;
+		}
+	
+		.container .result .item {
+			margin-top: 15px;
+		}
+	
+		.container .result .item a {
+			display: block;
+			text-decoration: none;
+			font-size: 20px;
+			color: blue;
+		}
+	
+		.container .result .item a:hover {
+			text-decoration: underline;
+		}
+	
+		.container .result .item p {
+			margin-top: 5px;
+			font-size: 15px;
+			color: #666;
+		}
+	
+		.container .result .item small {
+			display: block;
+			color: green;
+		}
+	</style>
 </head>
 
 <body>
-
+	<div class="container">
+		<div class="search">
+			<input type="text" value="输入关键字">
+			<button>Go</button>
+		</div>
+		<div class="result">
+			<div class="item">
+				<a href="http://">这是标题</a>
+				<p>这是摘要这是摘要</p>
+				<small>这是链接</small>
+			</div>
+		</div>
+	</div>
 </body>
 
 </html>

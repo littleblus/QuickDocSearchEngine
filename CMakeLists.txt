@@ -10,4 +10,4 @@ target_compile_features(http_server PRIVATE cxx_std_20)
 
 # 链接库
 target_link_libraries(parser PRIVATE stdc++fs)
-target_link_libraries(http_server PRIVATE pthread cppjieba cppjson stdc++fs)
+target_link_libraries(http_server PRIVATE pthread jsoncpp stdc++fs)

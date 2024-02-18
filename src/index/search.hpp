@@ -12,9 +12,9 @@ namespace search {
 		Search& operator=(const Search&) = delete;
 	public:
 		static Search* getInstance() noexcept {
-			if (index == nullptr) {
+			if (instance == nullptr) {
 				std::lock_guard<std::mutex> lock(mtx);
-				if (index == nullptr) {
+				if (instance == nullptr) {
 					instance = new Search();
 					index = new ns_index::Index();
 				}
@@ -104,6 +104,7 @@ namespace search {
 		static std::mutex mtx;
 	};
 
+	Search* Search::instance = nullptr;
 	ns_index::Index* Search::index = nullptr;
 	std::mutex Search::mtx;
 }

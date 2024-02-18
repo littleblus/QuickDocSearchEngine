@@ -9,8 +9,17 @@ int main() {
 	searcher->init(raw_path);
 
 	httplib::Server svr;
-	svr.Get("/", [](const httplib::Request& req, httplib::Response& rsp) {
-		rsp.set_content("Hello World!", "text/plain");
+	svr.Get("/s", [](const httplib::Request& req, httplib::Response& rsp) {
+		if (!req.has_param("word")) {
+			rsp.set_content("word is required", "text/plain; charset=utf-8");
+			return;
+		}
+		std::string word = req.get_param_value("word");
+#ifdef DEBUG
+		std::cout << "search word: " << word << std::endl;
+#endif
+		auto json_result = search::Search::getInstance()->search(word);
+		rsp.set_content(json_result, "application/json; charset=utf-8");
 		});
 	svr.listen("localhost", 1234);
 

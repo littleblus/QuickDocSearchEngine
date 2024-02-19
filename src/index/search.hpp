@@ -93,10 +93,13 @@ namespace search {
 			size_t pos = std::distance(content.begin(), it);
 
 			const int prev_len = 50, next_len = 100;
-			size_t start = pos > prev_len ? pos - prev_len : 0;
-			size_t end = pos + next_len < content.size() ? pos + next_len : content.size();
+			bool is_start = pos <= prev_len;
+			size_t start = is_start ? 0 : pos - prev_len;
+
+			bool is_end = pos + next_len >= content.size();
+			size_t end = is_end ? content.size() : pos + next_len;
 			if (start > end) return "null";
-			return content.substr(start, end - start);
+			return (is_start ? "" : "...") + content.substr(start, end - start) + (is_end ? "" : "...");
 		}
 	private:
 		static Search* instance;

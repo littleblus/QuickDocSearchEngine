@@ -9,6 +9,7 @@ int main() {
 	searcher->init(raw_path);
 
 	httplib::Server svr;
+	svr.set_base_dir(www_rootpath.c_str());
 	svr.Get("/s", [](const httplib::Request& req, httplib::Response& rsp) {
 		if (!req.has_param("word")) {
 			rsp.set_content("word is required", "text/plain; charset=utf-8");

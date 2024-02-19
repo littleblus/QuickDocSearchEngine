@@ -4,6 +4,7 @@
 
 <head>
 	<meta charset="utf-8">
+	<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 	<title>Boost Search Engine</title>
 	<style>
 		* {
@@ -36,6 +37,10 @@
 			border-right: none;
 			padding-left: 10px;
 			font-size: 15px;
+			color: black;
+		}
+
+		.container .search input::placeholder {
 			color: #ccc;
 		}
 	
@@ -86,17 +91,60 @@
 <body>
 	<div class="container">
 		<div class="search">
-			<input type="text" value="输入关键字">
-			<button>Go</button>
+			<input type="text" placeholder="输入关键字">
+			<button onclick="Search()">Go</button>
 		</div>
-		<div class="result">
-			<div class="item">
-				<a href="http://">这是标题</a>
-				<p>这是摘要这是摘要</p>
-				<small>这是链接</small>
-			</div>
+		<div class="result"></div>
 		</div>
-	</div>
+	<script>
+		$(document).ready(function () {
+			$('.container .search input').on('keypress', function (e) {
+				if (e.which == 13) {
+					Search();
+				}
+			});
+		});
+
+		function Search() {
+			let query = $(".container .search input").val();
+			$.ajax({
+				type: "GET",
+				url: "/s?word=" + query,
+				success: function (data) {
+					BuildHtml(data);
+					// 显示结果数量和搜索用时
+					// $(".container .search").append("<p>找到 " + data.count + " 个结果，用时 " + data.time + " 秒</p>");
+				}
+			})
+		}
+
+		function BuildHtml(data) {
+			// 获取html的result元素
+			let result = $(".container .result");
+			result.empty();
+			// 遍历data，构建html
+			for (let item of data) {
+				let a_lable = $("<a>", {
+					text: item.title,
+					href: item.url,
+					target: "_blank" // 在新窗口打开
+				});
+				let p_lable = $("<p>", {
+					text: item.abst
+				});
+				let small_lable = $("<small>", {
+					text: item.url
+				});
+				let item_lable = $("<div>", {
+					class: "item"
+				});
+				item_lable.append(a_lable);
+				item_lable.append(p_lable);
+				item_lable.append(small_lable);
+				result.append(item_lable);
+			}
+		}
+	</script>
 </body>
 
 </html>

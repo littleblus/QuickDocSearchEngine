@@ -94,6 +94,7 @@
 			<input type="text" placeholder="输入关键字">
 			<button onclick="Search()">Go</button>
 		</div>
+		<div class="search_info"></div>
 		<div class="result"></div>
 		</div>
 	<script>
@@ -113,7 +114,12 @@
 				success: function (data) {
 					BuildHtml(data);
 					// 显示结果数量和搜索用时
-					// $(".container .search").append("<p>找到 " + data.count + " 个结果，用时 " + data.time + " 秒</p>");
+					// 创建一个新的 <div> 来包含 <small> 标签
+					let smallDiv = $("<div>");
+					smallDiv.append("<small>找到 " + data.cnt + " 个结果，用时 " + data.time + " 秒</small>");
+					// 先清空，再将新的 <div> 添加到 .container .search 中
+					$(".container .search_info").empty();
+					$(".container .search_info").append(smallDiv);
 				}
 			})
 		}
@@ -123,7 +129,7 @@
 			let result = $(".container .result");
 			result.empty();
 			// 遍历data，构建html
-			for (let item of data) {
+			for (let item of data.results) {
 				let a_lable = $("<a>", {
 					text: item.title,
 					href: item.url,

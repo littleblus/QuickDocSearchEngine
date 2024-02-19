@@ -2,6 +2,7 @@
 #include "index.hpp"
 #include <mutex>
 #include <algorithm>
+#include <chrono>
 #include <jsoncpp/json/json.h>
 
 namespace search {
@@ -38,8 +39,9 @@ namespace search {
 
 		/// @brief 搜索
 		/// @param query 
-		/// @return json格式的搜索结果
+		/// @return json格式的搜索结果，包括搜索结果，搜索时间，搜索结果数量
 		std::string search(const std::string& query) {
+			auto time_start = std::chrono::high_resolution_clock::now();
 			auto words = jieba::cutString(query);
 			// 按照权重排序，降序
 			std::vector<ns_index::inverted_elem> result;
@@ -53,7 +55,7 @@ namespace search {
 				return a.weight > b.weight;
 				});
 			// 返回json格式的搜索结果
-			Json::Value root;
+			Json::Value root, results;
 			int cnt = 0;
 			for (auto& elem : result) {
 				ns_index::doc_info doc_info;
@@ -68,8 +70,14 @@ namespace search {
 				item["url"] = doc_info.url;
 				item["title"] = doc_info.title;
 				item["abst"] = getAbst(doc_info.content, elem.word);
-				root.append(item);
+				results.append(item);
+				cnt++;
 			}
+			auto time_end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> time_s = time_end - time_start;
+			root["results"] = results;
+			root["time"] = time_s.count();
+			root["cnt"] = cnt;
 #ifdef DEBUG
 			Json::StyledWriter writer;
 #else

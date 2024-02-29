@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <chrono>
 #include <jsoncpp/json/json.h>
+#include <unordered_map>
 
 namespace search {
 	class Search {
@@ -37,21 +38,43 @@ namespace search {
 			std::cerr << "search init success" << '\n';
 		}
 
+		struct inverted_elem_unique {
+			uint64_t doc_id;
+			std::string longest_word;
+			int weight;
+
+			inverted_elem_unique() = default;
+		};
+
 		/// @brief 搜索
 		/// @param query 
 		/// @return json格式的搜索结果，包括搜索结果，搜索时间，搜索结果数量
 		std::string search(const std::string& query) {
 			auto time_start = std::chrono::high_resolution_clock::now();
 			auto words = jieba::cutString(query);
-			// 按照权重排序，降序
-			std::vector<ns_index::inverted_elem> result;
+			// 去重
+			std::unordered_map<uint64_t, inverted_elem_unique> token_map;
 			for (auto& word : words) {
 				for (auto& c : word) c = std::tolower(c);
 				auto ii = index->get_inverted_index(word);
 				if (ii == nullptr) continue;
-				result.insert(result.end(), ii->begin(), ii->end());
+				// result.insert(result.end(), ii->begin(), ii->end());
+				for (const auto& elem : *ii) {
+					auto& it = token_map[elem.doc_id];
+					it.doc_id = elem.doc_id;
+					it.weight += elem.weight;
+					if (it.longest_word.size() < word.size()) {
+						it.longest_word = word;
+					}
+				}
 			}
-			std::sort(result.begin(), result.end(), [](const ns_index::inverted_elem& a, const ns_index::inverted_elem& b) {
+
+			std::vector<inverted_elem_unique> result;
+			for (const auto& elem : token_map) {
+				result.push_back(std::move(elem.second));
+			}
+			// 按照权重排序，降序
+			std::sort(result.begin(), result.end(), [](const inverted_elem_unique& a, const inverted_elem_unique& b) {
 				return a.weight > b.weight;
 				});
 			// 返回json格式的搜索结果
@@ -69,7 +92,7 @@ namespace search {
 				Json::Value item;
 				item["url"] = doc_info.url;
 				item["title"] = doc_info.title;
-				item["abst"] = getAbst(doc_info.content, elem.word);
+				item["abst"] = getAbst(doc_info.content, elem.longest_word);
 				results.append(item);
 				cnt++;
 			}

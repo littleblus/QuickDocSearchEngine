@@ -2,6 +2,8 @@
 #include "../cppjieba/include/cppjieba/Jieba.hpp"
 #include <vector>
 #include <string>
+#include <iostream>
+#include <unordered_set>
 
 namespace jieba {
 	const char* const DICT_PATH = "src/cppjieba/dict/jieba.dict.utf8";
@@ -15,6 +17,28 @@ namespace jieba {
 	std::vector<std::string> cutString(const std::string& src) noexcept {
 		std::vector<std::string> vs;
 		jieba.CutForSearch(src, vs);
+
+		// 去掉暂停词
+		std::ifstream ifs(STOP_WORD_PATH);
+		if (!ifs.is_open()) {
+			throw std::runtime_error("stop word file open failed");
+		}
+		std::unordered_set<std::string> stop_word;
+		std::string word;
+		while (std::getline(ifs, word)) {
+			stop_word.insert(word);
+		}
+		ifs.close();
+
+		for (auto it = vs.begin(); it != vs.end(); ) {
+			if (stop_word.find(*it) != stop_word.end()) {
+				it = vs.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+
 		return vs;
 	}
 }

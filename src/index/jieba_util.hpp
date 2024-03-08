@@ -23,20 +23,21 @@ namespace jieba {
 		if (!ifs.is_open()) {
 			throw std::runtime_error("stop word file open failed");
 		}
-		std::unordered_set<std::string> stop_word;
+		std::unordered_set<std::string> stop_word, result;
 		std::string word;
 		while (std::getline(ifs, word)) {
 			stop_word.insert(word);
 		}
 		ifs.close();
 
-		for (auto it = vs.begin(); it != vs.end(); ) {
-			if (stop_word.find(*it) != stop_word.end()) {
-				it = vs.erase(it);
+		for (const auto& e : vs) {
+			if (stop_word.find(e) == stop_word.end()) {
+				result.insert(std::move(e));
 			}
-			else {
-				++it;
-			}
+		}
+		vs.clear();
+		for (const auto& e : result) {
+			vs.push_back(std::move(e));
 		}
 
 		return vs;
